@@ -6,14 +6,16 @@ import Header from "./components/Header/Header";
 
 function App() {
   return (
-	<BuyFormProvider>
+	<>
 		<Header></Header>
-		<main>
-			<Outlet />
-		</main>
-		<ContactForm></ContactForm>
+		<BuyFormProvider>
+			<main>
+				<Outlet />
+			</main>
+			<ContactForm></ContactForm>
+		</BuyFormProvider>
       	<Footer />
-    </BuyFormProvider>
+	</>
   );
 }
 

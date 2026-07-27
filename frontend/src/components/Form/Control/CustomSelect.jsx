@@ -13,8 +13,6 @@ const CustomSelect = forwardRef(({
 
 		const { getValues } = useFormContext();
 		const value = getValues(register.name);
-		console.log(register.name);
-		console.log(value);
 	return (
 		<fieldset className="form-group">
 			{label && <label>{label}</label>}

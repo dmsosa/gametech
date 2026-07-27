@@ -1,4 +1,8 @@
 import { FormProvider, useForm } from "react-hook-form";
+import { ftGetItem, ftSetItem } from "../helpers/localStorageHelper";
+import { useEffect } from "react";
+
+const BUY_FORM_KEY = "buy-form-values";
 
 const defValues = {
 	orderId: 0,
@@ -11,7 +15,7 @@ const defValues = {
 	password: "",
 	passwordConfirm: "",
 	age: undefined,
-	birthday: new Date(),
+	birthdate: new Date().toISOString().split('T')[0],
 	paymentMethod: "",
 	deliveryIn: 0,
 	items: [{ id: 0, title: "", price: 0, quantity: 1, totalPrice: 0 }],
@@ -26,18 +30,21 @@ const defValues = {
 	disability: false,
 }
 
-const id = 0;
-
 export function BuyFormProvider({ children }) {
 
 	const methods = useForm({
 		defaultValues: async () => {
-			if (id == 0) return new Promise((resolve) => resolve(defValues))
-			else {
-			const tempOrder = await fetchLastOrder();
-			return new Promise((resolve) =>
-				resolve(tempOrder ? tempOrder : defValues)
-			)
+			try {
+				const values = ftGetItem(BUY_FORM_KEY);
+				console.log("First vals", values);
+				if (values == null)
+					return (defValues);
+				else 
+					return (values);
+			}
+			catch (e) {
+				console.log("Error while loading from local storage", e);
+				return (defValues);
 			}
 		},
 		mode: "onChange",
@@ -46,7 +53,28 @@ export function BuyFormProvider({ children }) {
 	const {
 		reset,
 		formState,
+		watch,
+		subscribe,
 	 } = methods;
+
+	 useEffect(() => {
+
+		const unsubscribe = subscribe({
+			formState: {
+			values: true,
+			},
+			callback: ({ values }) => {
+			ftSetItem(
+				BUY_FORM_KEY,
+				values,
+				{ ttl: 1000 * 60 * 60 * 24 * 3}
+			);
+			},
+		});
+		return unsubscribe;
+	 }, []);
+
+
 	return (
 		<FormProvider {...methods}>
 			{children}

@@ -88,11 +88,11 @@ export default function BuyFormItems() {
       <table id="form-food-items" className="table table-borderless table-hover">
         <thead>
           <tr>
-            <th>Items</th>
-            <th>Title</th>
-            <th className="text-start">Price</th>
+            <th className="text-start">Items</th>
+            <th className="text-start">Title</th>
+            <th className="text-start">Unit</th>
             <th>Quantity</th>
-            <th className="text-start">T. Price</th>
+            <th className="">Price</th>
             <th>
               <button
                 type="button"
@@ -153,11 +153,12 @@ export default function BuyFormItems() {
           {fields && fields.length > 0 && (
             <tr className="border-top">
               <td colSpan={2}></td>
-              <td>G. Total</td>
+              <td colSpan={2}><span className="fw-bold">Total</span></td>
               <td className="text-start align-middle">
-                {"$" + getValues("gTotal")}
+				<span className="fw-bold">
+					{"$" + getValues("gTotal")}
+				</span>
               </td>
-              <td></td>
             </tr>
           )}
           {errors.items?.root && (
