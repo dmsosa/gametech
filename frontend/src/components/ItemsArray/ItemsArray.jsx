@@ -18,20 +18,24 @@ function ItemsArray() {
 	const { fields, append, remove, update } = useFieldArray({ control, name: "items" });
 
 	const onItemAdd = (e, item) => {
-		console.log("Fired event, e", e);
+		e.preventDefault();
 		alert("item added to the cart")
-		const existingIndex = fields.findIndex((f) => f.id === item.id);
+		const existingIndex = fields?.findIndex((f) => f.itemId === item.id);
+		console.log(fields)
 		if (existingIndex >= 0) {
 			const existing = fields[existingIndex];
 			const quantity = existing.quantity + 1;
 			update(existingIndex, { ...existing, quantity, totalPrice: quantity * existing.price });
 		} else {
-			append({ id: item.id, title: item.title, price: item.price, quantity: 1, totalPrice: item.price });
+			if (fields.length == 1 && fields[0].title == "")
+				update(0, { id: item.id, title: item.title, price: item.price, quantity: 1, totalPrice: item.price });
+			else
+				append({ id: item.id, title: item.title, price: item.price, quantity: 1, totalPrice: item.price });
 		}
 	};
 
 	const onItemRemove = (e, itemId) => {
-		console.log("Fired event, e", e);
+		e.preventDefault();
 		alert("item removed from the cart")
 		const existingIndex = fields.findIndex((f) => f.id === itemId);
 		if (existingIndex >= 0) remove(existingIndex);

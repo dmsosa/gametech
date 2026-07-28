@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 const BUY_FORM_KEY = "buy-form-values";
 
-const defValues = {
+export const buyFormDefValues = {
 	orderId: 0,
 	orderNo: new Date().valueOf(),
 	placedOn: new Date(),
@@ -18,8 +18,7 @@ const defValues = {
 	birthdate: new Date().toISOString().split('T')[0],
 	paymentMethod: "",
 	deliveryIn: 0,
-	items: [{ id: 0, title: "", price: 0, quantity: 1, totalPrice: 0 }],
-	gTotal: 0,
+	items: [{ itemId: 0, title: "", price: 0, quantity: 0, totalPrice: 0 }],
 	address: {
 		streetAddress: "",
 		landmark: "",
@@ -36,24 +35,20 @@ export function BuyFormProvider({ children }) {
 		defaultValues: async () => {
 			try {
 				const values = ftGetItem(BUY_FORM_KEY);
-				console.log("First vals", values);
 				if (values == null)
-					return (defValues);
+					return (buyFormDefValues);
 				else 
 					return (values);
 			}
 			catch (e) {
 				console.log("Error while loading from local storage", e);
-				return (defValues);
+				return (buyFormDefValues);
 			}
 		},
 		mode: "onChange",
 	});
 
 	const {
-		reset,
-		formState,
-		watch,
 		subscribe,
 	 } = methods;
 

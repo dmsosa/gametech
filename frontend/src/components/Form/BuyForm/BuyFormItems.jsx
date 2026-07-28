@@ -9,7 +9,6 @@ export default function BuyFormItems() {
   const [itemsList, setItems] = useState([])
   const [opts, setOpts] = useState([])
   useEffect(() => {
-
     itemsGetAll().then((data) => {
 		const tempOptions = data.items.map((x) => ({
 			value: x.id,
@@ -25,27 +24,21 @@ export default function BuyFormItems() {
 
   }, [])
 
-	const { register, getValues, setValue, watch, trigger, control } = useFormContext();
+	const { register, getValues, setValue, trigger, control } = useFormContext();
 	const { fields, append, remove } = useFieldArray({ name: "items", control });
-  	
+	const totalQuantity = fields.reduce((sum, item) => sum + (item.quantity || 0), 0);
 	const { errors } = useFormState({ name: "items" });
 
 	const onRowAdd = (e) => {
 		e.preventDefault();
 		console.log(fields);
-		append({ id: 0, title: "", price: 0, quantity: 1, totalPrice: 0 });
+		append({ itemId: 0, title: "", price: 0, quantity: 0, totalPrice: 0 });
  	}
 
 	const onRowDelete = (e, itemId) => {
+		e.preventDefault();
 		remove(itemId);
-		console.log("removed");
   	}
-
-	const selectedItems = useWatch({
-		name: "items",
-	})
-	useWatch({ name: "gTotal" })
-
 
   const onItemIdChange = (
     e,
@@ -54,11 +47,13 @@ export default function BuyFormItems() {
     const id = parseInt(e.currentTarget.value);
     let existingItem;
     if (id == 0) existingItem = emptyOption;
-    else existingItem = itemsList.find((x) => x.id == id);
+    else existingItem = itemsList.find((x) => x.itemId == id);
 	const price = existingItem.price;
 	const title = existingItem.title;
     setValue(`items.${rowIndex}.price`, price);
     setValue(`items.${rowIndex}.title`, title);
+	if (fields && fields[rowIndex].quantity == 0)
+    	setValue(`items.${rowIndex}.quantity`, 1);
     updateRowTotalPrice(rowIndex);
   }
 
@@ -72,16 +67,6 @@ export default function BuyFormItems() {
 		)
 	}
 
-	useEffect(() => {
-		updateGTotal()
-	}, [selectedItems])
-
-	const updateGTotal = () => {
-		let gTotal = 0
-		if (selectedItems && selectedItems.length > 0)
-		gTotal = selectedItems.reduce((sum, curr) => sum + curr.totalPrice, 0)
-		setValue("gTotal", parseFloat(gTotal.toFixed(2)))
-	}
 
   return (
 
@@ -111,11 +96,11 @@ export default function BuyFormItems() {
 						<td>
 							<CustomSelect
 							opts={opts} 
-							{...register(`items.${index}.id`, {
+							{...register(`items.${index}.itemId`, {
 								valueAsNumber: true,
 								min: {
 									value: 1,
-									message: "Select food.",
+									message: "Select Item.",
 								},
 								onChange: (e) => {
 									onItemIdChange(e, index);
@@ -156,7 +141,7 @@ export default function BuyFormItems() {
               <td colSpan={2}><span className="fw-bold">Total</span></td>
               <td className="text-start align-middle">
 				<span className="fw-bold">
-					{"$" + getValues("gTotal")}
+					{"$" + totalQuantity}
 				</span>
               </td>
             </tr>
