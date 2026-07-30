@@ -50,10 +50,9 @@ export function BuyFormProvider({ children }) {
 
 	const {
 		subscribe,
-	 } = methods;
+	} = methods;
 
-	 useEffect(() => {
-
+	useEffect(() => {
 		const unsubscribe = subscribe({
 			formState: {
 			values: true,
@@ -67,7 +66,7 @@ export function BuyFormProvider({ children }) {
 			},
 		});
 		return unsubscribe;
-	 }, []);
+	}, []);
 
 
 	return (

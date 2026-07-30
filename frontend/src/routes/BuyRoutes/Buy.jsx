@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
-import BannerContainer from "../components/BannerContainer";
-import BuyForm from "../components/Form/BuyForm/BuyForm";
+import BannerContainer from "../../components/BannerContainer";
+import BuyForm from "../../components/Form/BuyForm/BuyForm";
 
 function Buy() {
   return (

@@ -10,7 +10,7 @@ const BuyPreview = () => {
 	const totalItemsCount = items?.reduce((sum, item) => sum + (item.quantity), 0);
 	const gTotal = items?.reduce((sum, item) => sum + (item.quantity || 0) * (item.price || 0), 0);
 	
-  return (
+	return (
 	<div className="rounded w-100 bordered d-flex align-items-center px-4 py-2 justify-content-between bg-body-secondary mb-3">
 		<div>
 			<FaShoppingCart className="d-inline me-3 mb-2 fs-3"></FaShoppingCart>
@@ -21,7 +21,7 @@ const BuyPreview = () => {
 			<Link to={"/buy"} type="button" className="btn btn-primary">Buy order</Link>
 		</div>
 	</div>
-  );
+	);
 };
 
 export default BuyPreview;

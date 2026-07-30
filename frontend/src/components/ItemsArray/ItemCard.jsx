@@ -26,7 +26,7 @@ function ItemCard({ item, onItemAdd, onItemRemove }) {
 				</div>
 			</div>
 		</div>
-  );
+	);
 }
 
 export default ItemCard;
