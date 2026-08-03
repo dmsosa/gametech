@@ -49,23 +49,14 @@ export function BuyFormProvider({ children }) {
 	});
 
 	const {
-		subscribe,
+		watch,
 	} = methods;
 
 	useEffect(() => {
-		const unsubscribe = subscribe({
-			formState: {
-			values: true,
-			},
-			callback: ({ values }) => {
-			ftSetItem(
-				BUY_FORM_KEY,
-				values,
-				{ ttl: 1000 * 60 * 60 * 24 * 3}
-			);
-			},
-		});
-		return unsubscribe;
+	const subscription = watch((values) => {
+    	ftSetItem(BUY_FORM_KEY, JSON.stringify(values));
+    });
+    return () => subscription.unsubscribe();
 	}, []);
 
 

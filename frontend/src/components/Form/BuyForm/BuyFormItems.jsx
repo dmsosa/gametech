@@ -1,4 +1,4 @@
-import { useFieldArray, useFormContext, useFormState, useWatch } from "react-hook-form";
+import { useFieldArray, useFormContext, useFormState, useWatch, Watch } from "react-hook-form";
 import CustomSelect from "../Control/CustomSelect";
 import { useEffect, useState } from "react";
 import { itemsGetAll } from "../../../data/items";
@@ -8,6 +8,8 @@ const emptyOption = { value: 0, text: "Select an item", icon: 0, desc: "Select t
 export default function BuyFormItems() {
 	const [itemsList, setItems] = useState([])
 	const [opts, setOpts] = useState([])
+	const [ gTotal, SetGTotal ] = useState(0)
+	
 	useEffect(() => {
 		itemsGetAll().then((data) => {
 		const tempOptions = data.items.map((x) => ({
@@ -21,17 +23,20 @@ export default function BuyFormItems() {
 	}).catch((err) => {
 		console.log("Error while fetching items in BuyFormItems component", err);
 	})
-
 	}, [])
 
 	const { register, getValues, setValue, trigger, control } = useFormContext();
 	const { fields, append, remove } = useFieldArray({ name: "items", control });
-	const totalQuantity = fields.reduce((sum, item) => sum + (item.quantity || 0), 0);
 	const { errors } = useFormState({ name: "items" });
+
+	useEffect(() => {
+		const tempTotal = fields.reduce((sum, itemCurrent) => sum + (itemCurrent.price * itemCurrent.quantity), 0);
+		if (tempTotal != gTotal)
+			SetGTotal(gTotal);
+	}, [fields])
 
 	const onRowAdd = (e) => {
 		e.preventDefault();
-		console.log(fields);
 		append({ itemId: 0, title: "", price: 0, quantity: 0, totalPrice: 0 });
 	}
 
@@ -48,26 +53,20 @@ export default function BuyFormItems() {
 		let existingItem;
 		if (id == 0) existingItem = emptyOption;
 		else existingItem = itemsList.find((x) => x.itemId == id);
-	const price = existingItem.price;
-	const title = existingItem.title;
-		setValue(`items.${rowIndex}.price`, price);
-		setValue(`items.${rowIndex}.title`, title);
-	if (fields && fields[rowIndex].quantity == 0)
+		setValue(`items.${rowIndex}.price`, existingItem.price);
+		setValue(`items.${rowIndex}.title`, existingItem.title);
+		if (fields && fields[rowIndex].quantity == 0)
 			setValue(`items.${rowIndex}.quantity`, 1);
 		updateRowTotalPrice(rowIndex);
 	}
 
 	const updateRowTotalPrice = (index) => {
 		const { price, quantity } = getValues(`items.${index}`)
-		let totalPrice = 0
-		if (quantity && quantity > 0) totalPrice = price * quantity
+		console.log(price, quantity);
 		setValue(
-		`items.${index}.totalPrice`,
-		parseFloat(totalPrice.toFixed(2))
+		`items.${index}.totalPrice`, Math.round((price * quantity) * 100) / 100
 		)
 	}
-
-
 	return (
 
 			<table id="form-food-items" className="table table-borderless table-hover">
@@ -117,10 +116,36 @@ export default function BuyFormItems() {
 						</td>
 						<td>
 							<TextFieldset
-							type="number"
-							normal={true}
-							clazz={''}
-							{...register(`items.${index}.quantity`)}
+								type="number"
+								normal={true}
+								clazz={''}
+								{...register(`items.${index}.quantity`,
+								{
+								valueAsNumber: true,
+								required: "< 1.",
+								validate: {
+									notMoreThanStock: async (value) => {
+										//add a delay
+										await new Promise((resolve) =>
+										setTimeout(resolve, 1000)
+										)
+										if (value && value > 9) return "Out of stock"
+										else return true
+									},
+									notEven: async (value) => {
+										if (value && value % 2 == 0)
+											return "Do not buy even quantities!"
+									}
+								},
+								min: {
+									value: 1,
+									message: "< 1.",
+								},
+								onChange: () => {
+									updateRowTotalPrice(index)
+								},
+								}
+								)}
 							></TextFieldset>
 						</td>
 						<td>
@@ -140,7 +165,7 @@ export default function BuyFormItems() {
 							<td colSpan={2}><span className="fw-bold">Total</span></td>
 							<td className="text-start align-middle">
 				<span className="fw-bold">
-					{"$" + totalQuantity}
+					{"$" + Math.round(gTotal * 100) / 100}
 				</span>
 							</td>
 						</tr>

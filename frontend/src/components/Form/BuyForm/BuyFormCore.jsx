@@ -38,7 +38,19 @@ export default function BuyFormCore() {
 			<TextFieldset
 				id={"buy-form-username"}
 				label="Your username"
-				{...register("username")}
+				{...register("username", 
+					{
+						required: "This field is required.",
+						minLength: {
+							value: 5,
+							message: "Username must be at least 5 characters",
+						},
+						maxLength: {
+							value: 25,
+							message: "Username cannot exceed 25 characters",
+						},
+					})
+				}
 				placeholder="username"
 				error={errors.username}
 			></TextFieldset>
@@ -50,10 +62,10 @@ export default function BuyFormCore() {
 			type="email"
 			placeholder="clarence@acme.com"
 			{...register("email", {
-			pattern: {
-			value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-			message: "Incorrect email format.",
-			},
+				pattern: {
+					value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+					message: "Incorrect email format.",
+				},
 			})}
 			error={errors.email}
 		></TextFieldset>

@@ -29,7 +29,7 @@ export default function BuyForm() {
 		clearErrors();
 	}
 
-  return (
+	return (
 		<form onSubmit={handleSubmit(onSubmit, onSubmitError)} className="container mb-5">
 			{formState.isLoading && <SpinnerLoader></SpinnerLoader>}
 			{formState.isSubmitted && formState.isSubmitSuccessful ?
@@ -46,5 +46,5 @@ export default function BuyForm() {
 			</>
 			}
 		</form>
-  );
+	);
 }

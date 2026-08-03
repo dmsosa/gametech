@@ -17,15 +17,15 @@ select:has(selectedcontent) {
 select::picker(select) {
 	appearance: base-select;
 	transition: 
-      opacity .2s ease,
-      transform .2s ease, 
-      display .2s allow-discrete, 
-      overlay .2s allow-discrete
-    ;
+			opacity .2s ease,
+			transform .2s ease, 
+			display .2s allow-discrete, 
+			overlay .2s allow-discrete
+		;
 }
 
 select::picker-icon {
-    display: none;
+		display: none;
 }
 
 select:not(:open)::picker(select) {
@@ -45,9 +45,9 @@ select selectedcontent > * {
 	opacity 0.2s;
 
 	@starting-style {
-      opacity: 0;
-      transform: translateY(10px);
-    }
+			opacity: 0;
+			transform: translateY(10px);
+		}
 	opacity: 1;
 }
 
@@ -129,27 +129,43 @@ select option:is(:checked) {
 }
 
 .custom-option {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.015rem;
-  align-items: center;
-  justify-content: start;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.015rem;
+	align-items: center;
+	justify-content: start;
 }
 
 .custom-option .description {
-  color: var(--bs-secondary);
-  flex-basis: 100%;
-  flex-grow: 1;
-  flex-shrink: 0;
-  order: 3;
+	color: var(--bs-secondary);
+	flex-basis: 100%;
+	flex-grow: 1;
+	flex-shrink: 0;
+	order: 3;
 }
 
 selectedcontent .custom-option .description {
-  display: none;
+	display: none;
 }
 
 /* ============================================================================
  * FORMS
+ * ============================================================================ */
+
+.form-control {
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.form-control::placeholder {
+	color: var(--bs-secondary-color);
+}
+
+.form-control:placeholder-shown {
+	background-color: var(--bs-gray-100);
+}
+
+/* ============================================================================
+ * TABLE
  * ============================================================================ */
 
 td {

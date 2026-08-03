@@ -1,10 +1,10 @@
-import { Outlet, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { BuyFormProvider } from "../../context/buyContext";
 
 function BuyRoutes() {
   return (
-	<BuyFormProvider>
-        <Outlet />
+	  <BuyFormProvider>
+      <Outlet />
     </BuyFormProvider>
   );
 }
