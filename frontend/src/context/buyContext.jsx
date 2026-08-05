@@ -54,7 +54,7 @@ export function BuyFormProvider({ children }) {
 
 	useEffect(() => {
 	const subscription = watch((values) => {
-    	ftSetItem(BUY_FORM_KEY, JSON.stringify(values));
+    	ftSetItem(BUY_FORM_KEY, values);
     });
     return () => subscription.unsubscribe();
 	}, []);

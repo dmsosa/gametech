@@ -8,8 +8,7 @@ const emptyOption = { value: 0, text: "Select an item", icon: 0, desc: "Select t
 export default function BuyFormItems() {
 	const [itemsList, setItems] = useState([])
 	const [opts, setOpts] = useState([])
-	const [ gTotal, SetGTotal ] = useState(0)
-	
+
 	useEffect(() => {
 		itemsGetAll().then((data) => {
 		const tempOptions = data.items.map((x) => ({
@@ -29,14 +28,11 @@ export default function BuyFormItems() {
 	const { fields, append, remove } = useFieldArray({ name: "items", control });
 	const { errors } = useFormState({ name: "items" });
 
-	useEffect(() => {
-		const tempTotal = fields.reduce((sum, itemCurrent) => sum + (itemCurrent.price * itemCurrent.quantity), 0);
-		if (tempTotal != gTotal)
-			SetGTotal(gTotal);
-	}, [fields])
-
 	const onRowAdd = (e) => {
 		e.preventDefault();
+		console.log(fields);
+		if (fields[fields.length - 1].title == "")
+			return ;
 		append({ itemId: 0, title: "", price: 0, quantity: 0, totalPrice: 0 });
 	}
 
@@ -62,11 +58,13 @@ export default function BuyFormItems() {
 
 	const updateRowTotalPrice = (index) => {
 		const { price, quantity } = getValues(`items.${index}`)
-		console.log(price, quantity);
 		setValue(
 		`items.${index}.totalPrice`, Math.round((price * quantity) * 100) / 100
 		)
 	}
+
+	const gTotal = fields.reduce((sum, itemCurrent) => sum + (itemCurrent.price * itemCurrent.quantity), 0);
+
 	return (
 
 			<table id="form-food-items" className="table table-borderless table-hover">
