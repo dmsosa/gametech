@@ -24,14 +24,14 @@ export default function BuyFormItems() {
 	})
 	}, [])
 
-	const { register, getValues, setValue, trigger, control } = useFormContext();
-	const { fields, append, remove } = useFieldArray({ name: "items", control });
+	const { register, getValues, trigger, control } = useFormContext();
+	const { fields, append, remove, update } = useFieldArray({ name: "items", control });
 	const { errors } = useFormState({ name: "items" });
 
 	const onRowAdd = (e) => {
 		e.preventDefault();
 		console.log(fields);
-		if (fields[fields.length - 1].title == "")
+		if (fields.length > 0 && fields[fields.length - 1].title == "")
 			return ;
 		append({ itemId: 0, title: "", price: 0, quantity: 0, totalPrice: 0 });
 	}
@@ -49,22 +49,23 @@ export default function BuyFormItems() {
 		let existingItem;
 		if (id == 0) existingItem = emptyOption;
 		else existingItem = itemsList.find((x) => x.itemId == id);
-		setValue(`items.${rowIndex}.price`, existingItem.price);
-		setValue(`items.${rowIndex}.title`, existingItem.title);
-		if (fields && fields[rowIndex].quantity == 0)
-			setValue(`items.${rowIndex}.quantity`, 1);
-		updateRowTotalPrice(rowIndex);
+		const { title, price } = existingItem
+		const quantity = fields[rowIndex].quantity > 0 ? fields[rowIndex].quantity : 1;
+		const totalPrice = price * quantity;
+		update(rowIndex, { itemId: id, title, price, quantity, totalPrice })
 	}
 
-	const updateRowTotalPrice = (index) => {
-		const { price, quantity } = getValues(`items.${index}`)
-		setValue(
-		`items.${index}.totalPrice`, Math.round((price * quantity) * 100) / 100
-		)
+	const onItemQuantityChange = (
+		e,
+		rowIndex
+	) => {
+		const quantity = parseInt(e.currentTarget.value);
+		const { itemId, title, price } = fields[rowIndex];
+		const totalPrice = price * quantity;
+		update(rowIndex, { itemId, title, price, quantity, totalPrice })
 	}
 
 	const gTotal = fields.reduce((sum, itemCurrent) => sum + (itemCurrent.price * itemCurrent.quantity), 0);
-
 	return (
 
 			<table id="form-food-items" className="table table-borderless table-hover">
@@ -139,15 +140,15 @@ export default function BuyFormItems() {
 									value: 1,
 									message: "< 1.",
 								},
-								onChange: () => {
-									updateRowTotalPrice(index)
+								onChange: (e) => {
+									onItemQuantityChange(e, index)
 								},
 								}
 								)}
 							></TextFieldset>
 						</td>
 						<td>
-							<span>{"$" + getValues(`items.${index}.totalPrice`)}</span>
+							<span>{"$" + (Math.round(getValues(`items.${index}.totalPrice`)  * 100)) / 100}</span>
 						</td>
 						<td>
 							<button type="button" className="btn btn-danger" onClick={(e) => onRowDelete(e, index)}>X</button>
@@ -163,7 +164,7 @@ export default function BuyFormItems() {
 							<td colSpan={2}><span className="fw-bold">Total</span></td>
 							<td className="text-start align-middle">
 				<span className="fw-bold">
-					{"$" + Math.round(gTotal * 100) / 100}
+					{"$" + Math.round((gTotal) * 100) / 100}
 				</span>
 							</td>
 						</tr>
